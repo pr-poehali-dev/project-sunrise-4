@@ -1,12 +1,40 @@
 import { Shader, ChromaFlow, Swirl } from "shaders/react"
 import { CustomCursor } from "@/components/custom-cursor"
 import { GrainOverlay } from "@/components/grain-overlay"
-import { WorkSection } from "@/components/sections/work-section"
-import { ServicesSection } from "@/components/sections/services-section"
-import { AboutSection } from "@/components/sections/about-section"
-import { ContactSection } from "@/components/sections/contact-section"
-import { MagneticButton } from "@/components/magnetic-button"
+import { SlideTitle } from "@/components/sections/slide-title"
+import { SlideVision } from "@/components/sections/slide-vision"
+import { SlideProblems } from "@/components/sections/slide-problems"
+import { Slide4D } from "@/components/sections/slide-4d"
+import { SlideDelete } from "@/components/sections/slide-delete"
+import { SlideDelegate } from "@/components/sections/slide-delegate"
+import { SlideDefer } from "@/components/sections/slide-defer"
+import { SlideDo } from "@/components/sections/slide-do"
+import { SlideTech } from "@/components/sections/slide-tech"
+import { SlideTimeline } from "@/components/sections/slide-timeline"
+import { SlideResults } from "@/components/sections/slide-results"
+import { SlideROI } from "@/components/sections/slide-roi"
+import { SlideNextSteps } from "@/components/sections/slide-next-steps"
+import { SlideConclusion } from "@/components/sections/slide-conclusion"
 import { useRef, useEffect, useState } from "react"
+
+const TOTAL_SLIDES = 14
+
+const NAV_ITEMS = [
+  "Титул",
+  "Видение",
+  "Проблемы",
+  "4D",
+  "Delete",
+  "Delegate",
+  "Defer",
+  "Do",
+  "Цифра",
+  "План",
+  "Результат",
+  "ROI",
+  "Будущее",
+  "Итоги",
+]
 
 export default function Index() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -77,7 +105,7 @@ export default function Index() {
       const deltaX = touchStartX.current - touchEndX
 
       if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
-        if (deltaY > 0 && currentSection < 4) {
+        if (deltaY > 0 && currentSection < TOTAL_SLIDES - 1) {
           scrollToSection(currentSection + 1)
         } else if (deltaY < 0 && currentSection > 0) {
           scrollToSection(currentSection - 1)
@@ -147,7 +175,7 @@ export default function Index() {
         const scrollLeft = scrollContainerRef.current.scrollLeft
         const newSection = Math.round(scrollLeft / sectionWidth)
 
-        if (newSection !== currentSection && newSection >= 0 && newSection <= 4) {
+        if (newSection !== currentSection && newSection >= 0 && newSection <= TOTAL_SLIDES - 1) {
           setCurrentSection(newSection)
         }
 
@@ -170,6 +198,18 @@ export default function Index() {
     }
   }, [currentSection])
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" && currentSection < TOTAL_SLIDES - 1) {
+        scrollToSection(currentSection + 1)
+      } else if (e.key === "ArrowLeft" && currentSection > 0) {
+        scrollToSection(currentSection - 1)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [currentSection])
+
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
       <CustomCursor />
@@ -182,9 +222,9 @@ export default function Index() {
       >
         <Shader className="h-full w-full">
           <Swirl
-            colorA="#1275d8"
-            colorB="#e19136"
-            speed={0.8}
+            colorA="#1a5fb4"
+            colorB="#26a269"
+            speed={0.6}
             detail={0.8}
             blend={50}
             coarseX={40}
@@ -195,23 +235,23 @@ export default function Index() {
             fineY={40}
           />
           <ChromaFlow
-            baseColor="#0066ff"
-            upColor="#0066ff"
-            downColor="#d1d1d1"
-            leftColor="#e19136"
-            rightColor="#e19136"
-            intensity={0.9}
+            baseColor="#1a5fb4"
+            upColor="#1a5fb4"
+            downColor="#c0c0c0"
+            leftColor="#26a269"
+            rightColor="#26a269"
+            intensity={0.85}
             radius={1.8}
-            momentum={25}
+            momentum={20}
             maskType="alpha"
-            opacity={0.97}
+            opacity={0.95}
           />
         </Shader>
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       <nav
-        className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-opacity duration-700 md:px-12 ${
+        className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 py-4 transition-opacity duration-700 md:px-8 md:py-6 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -219,34 +259,32 @@ export default function Index() {
           onClick={() => scrollToSection(0)}
           className="flex items-center gap-2 transition-transform hover:scale-105"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/15 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-foreground/25">
-            <span className="font-sans text-xl font-bold text-foreground">F</span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/15 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-foreground/25">
+            <span className="font-sans text-lg font-bold text-foreground">ОТ</span>
           </div>
-          <span className="font-sans text-xl font-semibold tracking-tight text-foreground">Flowrise</span>
         </button>
 
-        <div className="hidden items-center gap-8 md:flex">
-          {["Главная", "Работы", "Услуги", "О нас", "Контакты"].map((item, index) => (
+        <div className="hidden items-center gap-1 md:flex">
+          {NAV_ITEMS.map((item, index) => (
             <button
               key={item}
               onClick={() => scrollToSection(index)}
-              className={`group relative font-sans text-sm font-medium transition-colors ${
-                currentSection === index ? "text-foreground" : "text-foreground/80 hover:text-foreground"
+              className={`group relative rounded-full px-2.5 py-1 font-mono text-[11px] font-medium transition-all duration-300 ${
+                currentSection === index
+                  ? "bg-foreground/15 text-foreground backdrop-blur-sm"
+                  : "text-foreground/50 hover:text-foreground/80"
               }`}
             >
               {item}
-              <span
-                className={`absolute -bottom-1 left-0 h-px bg-foreground transition-all duration-300 ${
-                  currentSection === index ? "w-full" : "w-0 group-hover:w-full"
-                }`}
-              />
             </button>
           ))}
         </div>
 
-        <MagneticButton variant="secondary" onClick={() => scrollToSection(4)}>
-          Начать
-        </MagneticButton>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs text-foreground/50">
+            {String(currentSection + 1).padStart(2, "0")}/{TOTAL_SLIDES}
+          </span>
+        </div>
       </nav>
 
       <div
@@ -257,50 +295,40 @@ export default function Index() {
         }`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {/* Hero Section */}
-        <section className="flex min-h-screen w-screen shrink-0 flex-col justify-end px-6 pb-16 pt-24 md:px-12 md:pb-24">
-          <div className="max-w-3xl">
-            <div className="mb-4 inline-block animate-in fade-in slide-in-from-bottom-4 rounded-full border border-foreground/20 bg-foreground/15 px-4 py-1.5 backdrop-blur-md duration-700">
-              <p className="font-mono text-xs text-foreground/90">Современные технологии</p>
-            </div>
-            <h1 className="mb-6 animate-in fade-in slide-in-from-bottom-8 font-sans text-6xl font-light leading-[1.1] tracking-tight text-foreground duration-1000 md:text-7xl lg:text-8xl">
-              <span className="text-balance">
-                Цифровое будущее
-              </span>
-            </h1>
-            <p className="mb-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 text-lg leading-relaxed text-foreground/90 duration-1000 delay-200 md:text-xl">
-              <span className="text-pretty">
-                Создаем современные веб-приложения и цифровые продукты, которые помогают бизнесу расти и развиваться.
-              </span>
-            </p>
-            <div className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-4 duration-1000 delay-300 sm:flex-row sm:items-center">
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                onClick={() => scrollToSection(4)}
-              >
-                Обсудить проект
-              </MagneticButton>
-              <MagneticButton size="lg" variant="secondary" onClick={() => scrollToSection(2)}>
-                Наши услуги
-              </MagneticButton>
-            </div>
-          </div>
+        <SlideTitle scrollToSection={scrollToSection} />
+        <SlideVision />
+        <SlideProblems />
+        <Slide4D />
+        <SlideDelete />
+        <SlideDelegate />
+        <SlideDefer />
+        <SlideDo />
+        <SlideTech />
+        <SlideTimeline />
+        <SlideResults />
+        <SlideROI />
+        <SlideNextSteps />
+        <SlideConclusion />
+      </div>
 
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-in fade-in duration-1000 delay-500">
-            <div className="flex items-center gap-2">
-              <p className="font-mono text-xs text-foreground/80">Листайте вправо</p>
-              <div className="flex h-6 w-12 items-center justify-center rounded-full border border-foreground/20 bg-foreground/15 backdrop-blur-md">
-                <div className="h-2 w-2 animate-pulse rounded-full bg-foreground/80" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <WorkSection />
-        <ServicesSection />
-        <AboutSection scrollToSection={scrollToSection} />
-        <ContactSection />
+      <div
+        className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-opacity duration-700 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <div className="flex items-center gap-1.5 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-2 backdrop-blur-md">
+          {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollToSection(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                currentSection === i
+                  ? "w-6 bg-foreground/80"
+                  : "w-1.5 bg-foreground/25 hover:bg-foreground/40"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       <style>{`
